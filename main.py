@@ -6,20 +6,20 @@ from mysql.connector import Error
 
 class AirlineReservationSystem:
     def __init__(self) -> None:
-        self.db_connection = None
+        self.dbConnection = None
 
     def connectToDatabase(self) -> None:
         """Connect to the MySQL database."""
         try:
-            self.db_connection = sql.connect(host="localhost", user="root", password="", database="")
-            self.db_connection.autocommit = True
+            self.dbConnection = sql.connect(host="localhost", user="root", password="", database="")
+            self.dbConnection.autocommit = True
         except Error as e:
             print(f"Error connecting to database: {e}")
 
     def closeDatabaseConnection(self) -> None:
         """Close the database connection."""
-        if self.db_connection:
-            self.db_connection.close()
+        if self.dbConnection:
+            self.dbConnection.close()
 
     def signIn(self) -> bool:
         """Authenticate user by username and password."""
@@ -27,7 +27,7 @@ class AirlineReservationSystem:
         password = input("Password: ")
 
         try:
-            with self.db_connection.cursor() as cursor:
+            with self.dbConnection.cursor() as cursor:
                 query = "SELECT firstName, lastName FROM accounts WHERE userName = %s AND password = %s"
                 cursor.execute(query, (username, password))
                 data = cursor.fetchone()
@@ -46,7 +46,7 @@ class AirlineReservationSystem:
     def signUp(self) -> bool:
         """Create a new user account."""
         try:
-            with self.db_connection.cursor() as cursor:
+            with self.dbConnection.cursor() as cursor:
                 firstName = input("First Name: ")
                 lastName = input("Last Name: ")
                 userName = input("Username: ")
@@ -72,7 +72,7 @@ class AirlineReservationSystem:
             return False
         finally:
             if 'connection' in locals():
-                self.db_connection.close()
+                self.dbConnection.close()
 
     def deleteAccount(self) -> bool:
         """Delete user account by username and password."""
@@ -80,7 +80,7 @@ class AirlineReservationSystem:
         password = input("Password: ")
 
         try:
-            with self.db_connection.cursor() as cursor:
+            with self.dbConnection.cursor() as cursor:
                 query = "SELECT userName, firstName, lastName FROM account WHERE userName = %s AND password = %s"
                 cursor.execute(query, (username, password))
                 data = cursor.fetchone()
@@ -93,7 +93,7 @@ class AirlineReservationSystem:
                     if confirmChoice == "yes":
                         queryDelete = "DELETE FROM account WHERE userName = %s AND password = %s"
                         cursor.execute(queryDelete, (username, password))
-                        self.db_connection.commit()
+                        self.dbConnection.commit()
                         print("Account Deleted")
                         return True
                     else:
@@ -104,7 +104,7 @@ class AirlineReservationSystem:
             print(f"Error occurred: {e}")
         finally:
             if 'connection' in locals():
-                self.db_connection.close()
+                self.dbConnection.close()
 
     def airlineReservationSystem(self) -> None:
         """Handle airline reservation system functionalities."""
@@ -131,8 +131,8 @@ class AirlineReservationSystem:
                 print("Error: Invalid Choice")
 
             try:
-                continue_choice = int(input("Do you want to continue? (1. Yes / 2. No): "))
-                if continue_choice != 1:
+                continueChoice = int(input("Do you want to continue? (1. Yes / 2. No): "))
+                if continueChoice != 1:
                     print("Thank You")
                     return
             except ValueError:
@@ -153,7 +153,7 @@ class AirlineReservationSystem:
         completeDate = f"{year:04d}-{month:02d}-{date:02d}"  # Format the date as YYYY-MM-DD
 
         try:
-            with self.db_connection.cursor() as cursor:
+            with self.dbConnection.cursor() as cursor:
                 query = """
                     INSERT INTO ticket 
                     (name, phoneNumber, age, gender, departure, arrival, date) 
@@ -163,21 +163,21 @@ class AirlineReservationSystem:
                     query,
                     (name, phoneNumber, age, gender, departure, arrival, completeDate)
                 )
-                self.db_connection.commit()
+                self.dbConnection.commit()
                 print("Ticket Booked Successfully")
         except Error as e:
-            self.db_connection.rollback()
+            self.dbConnection.rollback()
             print(f"Error occurred while booking ticket: {e}")
         finally:
             if 'connection' in locals():
-                self.db_connection.close()
+                self.dbConnection.close()
 
     def checkTicket(self) -> None:
         """Check ticket details by phone number."""
         phoneNumber = input("Phone Number: ")
 
         try:
-            with self.db_connection.cursor() as cursor:
+            with self.dbConnection.cursor() as cursor:
                 query = "SELECT * FROM ticket WHERE phoneNumber = %s"
                 cursor.execute(query, (phoneNumber,))
                 data = cursor.fetchone()
@@ -192,14 +192,14 @@ class AirlineReservationSystem:
             print(f"Error occurred while checking ticket: {e}")
         finally:
             if 'connection' in locals():
-                self.db_connection.close()
+                self.dbConnection.close()
 
     def cancelTicket(self) -> None:
         """Cancel a ticket by phone number."""
         phoneNumber = input("Phone Number: ")
 
         try:
-            with self.db_connection.cursor() as cursor:
+            with self.dbConnection.cursor() as cursor:
                 query = "DELETE FROM ticket WHERE phoneNumber = %s"
                 cursor.execute(query, (phoneNumber,))
                 if cursor.rowcount > 0:
@@ -210,11 +210,11 @@ class AirlineReservationSystem:
             print(f"Error occurred while cancelling ticket: {e}")
         finally:
             if 'connection' in locals():
-                self.db_connection.close()
+                self.dbConnection.close()
 
     def accountDetails(self) -> None:
         """Display account details by username and password."""
-        cursor = self.db_connection.cursor()
+        cursor = self.dbConnection.cursor()
         userName = input("Username: ")
         password = input("Password: ")
 
@@ -236,7 +236,7 @@ class AirlineReservationSystem:
             print("Error occurred while fetching account details: ", e)
         finally:
             if 'connection' in locals():
-                self.db_connection.close()
+                self.dbConnection.close()
 
 
 def printData(labels: List[str], data: Tuple) -> None:
@@ -248,25 +248,26 @@ def printData(labels: List[str], data: Tuple) -> None:
 if __name__ == "__main__":
     """Display the main menu of the Airline Reservation System."""
     print("Welcome To Airline Reservation System")
-    airline_system = AirlineReservationSystem()
-    airline_system.connectToDatabase()
+    airlineSystem = AirlineReservationSystem()
+    airlineSystem.connectToDatabase()
 
     while True:
         print("1. Log In")
         print("2. Create Account")
-        print("3. Exit")
+        print("3. Delete Account")
+        print("4. Exit")
         choice = int(input("Enter Your Choice: "))
 
         if choice == 1:
-            if airline_system.signIn():
-                airline_system.airlineReservationSystem()
+            if airlineSystem.signIn():
+                airlineSystem.airlineReservationSystem()
         elif choice == 2:
-            if airline_system.signUp():
-                airline_system.airlineReservationSystem()
+            if airlineSystem.signUp():
+                airlineSystem.airlineReservationSystem()
         elif choice == 3:
-            airline_system.deleteAccount()
+            airlineSystem.deleteAccount()
         elif choice == 4:
-            airline_system.closeDatabaseConnection()
+            airlineSystem.closeDatabaseConnection()
             print("Thank You")
             break
         else:
