@@ -1,33 +1,27 @@
-drop database AirlineReservation;
 create database AirlineReservation;
 use AirlineReservation;
 
-create table Passenger(
-	FirstName varchar(100),
-    LastName varchar(100),
-    UserName varchar(100) primary key,
-    Pass varchar(100),
-    PhoneNumber int,
-    Gender enum('Male', 'Female'),
-    BirthDate date,
-    Age int
+-- Create the 'Account' table to store user account information
+CREATE TABLE Account (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL,
+    userName VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    phoneNumber VARCHAR(20) NOT NULL,
+    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    dateOfBirth DATE NOT NULL,
+    age INT NOT NULL
 );
 
-create table Flight(
-	FlightNumber int primary key,
-    FlightFrom char(4),
-    FlightTo char(4),
-    Aircraft char(4)
-);
-
-create table Ticket(
-	LastName varchar(100) references Passenger(LastName),
-    PhoneNumber int,
-    Age int references Passenger(Age),
-    Gender enum('Male', 'Female') references Passenger(Gender),
-    FlightNumber int references Flight(FlightNumber),
-    FlightFrom char(4) references Flight(FlightFrom),
-    FlightTo char(4) references Flight(FlightTo),
-    Class enum('Economy', 'Business', 'First'),
-    FlightDate date
+-- Create the 'Ticket' table to store ticket booking information
+CREATE TABLE Ticket (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phoneNumber VARCHAR(20) NOT NULL,
+    age INT NOT NULL,
+    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    departure VARCHAR(255) NOT NULL,
+    arrival VARCHAR(255) NOT NULL,
+    date DATE NOT NULL
 );
